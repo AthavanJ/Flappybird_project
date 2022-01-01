@@ -30,11 +30,13 @@ def draw():
         image(bird,birdx,birdy,110,80)
         if start_game == True:
             birdy += 1.5
+            pipes_draw()
             pipes_move()
             check_lengths()
             reset_pipes()
         elif start_game == False:
             animation_playscreen()
+            pipes_draw()
             
     elif mode == 3:
         end_screen()
@@ -58,7 +60,7 @@ def play_screen():
         
     if start_game == True:
         if keyCode == UP:
-            birdy -= 60
+            birdy -= 80
 
 
 def keyPressed():
@@ -129,7 +131,7 @@ def animation_playscreen():
 def pipes_move_variables():
     global pipes, pipe1, pipe2, pipe3, topleftx1, toplefty1, bottomleftx1, bottomlefty1, topleftx2, toplefty2, bottomleftx2, bottomlefty2, topleftx3, toplefty3, bottomleftx3, bottomlefty3
     temp = 0
-    pipes = [[300, 0, temp, temp, 350, 200],[ 300, 400, temp, temp, 400, 200], [1, 2, temp, temp,  5, 6],[ 3, 4, temp, temp, 5, 6], [1, 2, temp, temp, 5, 6],[3, 4, temp, temp, 5, 6]] #[topleftx,toplefty,bottomleftx, bottomlefty, length, width] 
+    pipes = [[300, 0, temp, temp, 280, 100],[ 300, 483, temp, temp, 280, 100], [550, 0, temp, temp, 375, 100],[550, 563, temp, temp, 200, 100], [800, 0, temp, temp, 120, 100],[800, 363, temp, temp, 400, 100]] #[topleftx,toplefty,bottomleftx, bottomlefty, length, width] 
  
     topleftx1 = pipes[0][0]
     toplefty1 = pipes[0][1] + pipes[0][4]
@@ -149,41 +151,40 @@ def pipes_move_variables():
     #[topleftx,toplefty,bottomleftx, bottomlefty, length, width] 
     #pipe1/2/3 = [[top], [bottom]]
     pipe1 = [[300, 0, topleftx1, toplefty1, 280, 100],[ 300, 483, bottomleftx1, bottomlefty1, 280, 100]]
-    pipe2 = [[550, 0, topleftx2, toplefty2, 375, 100], [ 550, 563, bottomleftx2, bottomlefty2, 200, 100]]
+    pipe2 = [[550, 0, topleftx2, toplefty2, 375, 100], [550, 563, bottomleftx2, bottomlefty2, 200, 100]]
     pipe3 = [[800, 0, topleftx3, toplefty3, 120, 100], [800, 363, bottomleftx3, bottomlefty3, 400, 100]]
      
 
     
-def pipes_move():
+def pipes_draw():
     global pipe1, speed
     stroke('#228C22')
     fill('#228C22')
     #1st set of pipes
     #Top
     rect(pipe1[0][0],pipe1[0][1], pipe1[0][5], pipe1[0][4])
-    pipe1[0][0] -= speed
     #bottom
     rect(pipe1[1][0],pipe1[1][1], pipe1[1][5], pipe1[1][4])
-    pipe1[1][0] -= speed
          
     #2nd set of pipes
     #Top
     rect(pipe2[0][0],pipe2[0][1], pipe2[0][5], pipe2[0][4])
-    pipe2[0][0] -= speed
     #Bottom
     rect(pipe2[1][0],pipe2[1][1], pipe2[1][5], pipe2[1][4])
-    pipe2[1][0] -= speed
     
     #3rd set of pipes
     #Top
     rect(pipe3[0][0],pipe3[0][1], pipe3[0][5], pipe3[0][4])
-    pipe3[0][0] -= speed
     #Bottom
     rect(pipe3[1][0],pipe3[1][1], pipe3[1][5], pipe3[1][4])
-    pipe3[1][0] -= speed
-    #3rd set of pipes
-
     
+def pipes_move():
+    pipe1[0][0] -= speed
+    pipe1[1][0] -= speed
+    pipe2[0][0] -= speed
+    pipe2[1][0] -= speed
+    pipe3[0][0] -= speed
+    pipe3[1][0] -= speed
     
 def reset_pipes():
     global pipe1, pipe2, pipe3
