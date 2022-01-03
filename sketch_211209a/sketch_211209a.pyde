@@ -6,7 +6,7 @@ add_library('minim')
 mode = 1 #Start screen, 2 == play screen, 3 == end screen
 x = 0
 y = 0
-speed = 2
+speed = 3
 birdx = 100
 birdy = 400 
 start_game = False
@@ -50,9 +50,9 @@ def draw():
         bird = loadImage("character_bird.png")
         image(bird,birdx,birdy,110,80)
         if start_game == True:
-            birdy += 2
-            circleY1 += 2
-            circleY2 += 2
+            birdy += 2.5
+            circleY1 += 2.5
+            circleY2 += 2.5
             pipes_draw()
             pipes_move()
             check_lengths()
@@ -103,8 +103,8 @@ def draw():
         score_text= createFont("Cursive", 100)
         fill(255, 105, 180)
         textFont(score_text)
-        text((score), 190, 400)
-        text((highscore), 490, 400) 
+        text((score), 175, 400)
+        text((highscore), 475, 400) 
     
         start_game = False
              
@@ -158,7 +158,7 @@ def play_screen_move_variables():
     Playscreen_Height = 900 
     Playscreen_Width = 1600  
     Play_Width_Size = 675 
-    Increment = 2  
+    Increment = 3
     image_PlayX = 0    
     image_PlayY = 0      
     Xcoor_play = 0 
@@ -409,6 +409,9 @@ def points(pipe):
             score += 1
             coin_sound.trigger()
     elif (circleX1 - 44//2) == (pipe[0][0] + pipe[0][5] + 1): #if speed = 2 add +1
+            score += 1
+            coin_sound.trigger()
+    elif (circleX1 - 44//2) == (pipe[0][0] + pipe[0][5] + 2): #if speed = 2 add +1
             score += 1
             coin_sound.trigger()
 
