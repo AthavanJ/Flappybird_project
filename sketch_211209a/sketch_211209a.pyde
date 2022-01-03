@@ -2,13 +2,11 @@
 add_library('minim')
 
 
-
-
 #global variables
 mode = 1 #Start screen, 2 == play screen, 3 == end screen
 x = 0
 y = 0
-speed = 1
+speed = 2
 birdx = 100
 birdy = 400 
 start_game = False
@@ -51,9 +49,9 @@ def draw():
         bird = loadImage("character_bird.png")
         image(bird,birdx,birdy,110,80)
         if start_game == True:
-            birdy += 1.5
-            circleY1 += 1.5
-            circleY2 += 1.5
+            birdy += 2
+            circleY1 += 2
+            circleY2 += 2
             pipes_draw()
             pipes_move()
             check_lengths()
@@ -103,7 +101,6 @@ def draw():
         #print score 
         score_text= createFont("Cursive", 100)
         fill(255, 105, 180)
-        strokeWeight(16)
         textFont(score_text)
         text((score), 190, 400)
         text((highscore), 490, 400) 
@@ -133,9 +130,10 @@ def play_screen():
         
     if start_game == True:
         if keyCode == UP:
-            birdy -= 80
-            circleY1 -= 80
-            circleY2 -= 80
+            for i in range(80):
+                birdy -= 1
+                circleY1 -= 1
+                circleY2 -= 1
             
 
 
@@ -351,6 +349,10 @@ def check_collisions_bottom(pipe, choiceA, choiceB, circleX, circleY):
             elif (circleY + (b-1)//2) >= 763:
                 start_game = False
                 mode = 3
+    #sky
+            elif (circleY + (b-1)//2) < 0:
+                start_game = False
+                mode = 3
 
 
 
@@ -399,10 +401,14 @@ def check_collisions_top(pipe, choiceA, choiceB, circleX, circleY):
 
 
 def points(pipe):
-    global score, circleX1, circleX2, circleY1, circleY2, coin_sound, pipe1, pipe2, pipe3, score_timer
-    if (circleX1 - 44//2) == (pipe[0][0] + pipe[0][5]):
+    global score, circleX1, circleX2, circleY1, circleY2, coin_sound, pipe1, pipe2, pipe3, speed
+    if (circleX1 - 44//2) == (pipe[0][0] + pipe[0][5]): #if speed = 2 add +1
             score += 1
             coin_sound.trigger()
+    elif (circleX1 - 44//2) == (pipe[0][0] + pipe[0][5] + 1): #if speed = 2 add +1
+            score += 1
+            coin_sound.trigger()
+
     
     
 
