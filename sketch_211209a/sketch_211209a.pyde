@@ -1,3 +1,10 @@
+#import audio library
+add_library('minim')
+
+
+
+
+#global variables
 mode = 1 #Start screen, 2 == play screen, 3 == end screen
 x = 0
 y = 0
@@ -8,59 +15,128 @@ start_game = False
 switch = False
 score = 0
 highscore = 0
-
+choiceA1 = 17
+choiceA2 = 53
+choiceB1 = 23
+choiceB2 = 53
+circleX1 = 155
+circleX2 = 173
+circleY1 = 445
+circleY2 = 455
 
 def setup():
     global mode
-    global Xcoor_play, Ycoor_play, canvasX, canvasY, play_screen_background, Playscreen_Height, Playscreen_Width, Play_Width_Size, Increment, image_PlayX, image_PlayY
+    global Xcoor_play, Ycoor_play, canvasX, canvasY, play_screen_background, Playscreen_Height, Playscreen_Width, Play_Width_Size, Increment, image_PlayX, image_PlayY, coin_sound
     play_screen_move_variables()
     pipes_move_variables()
     size(675,900)
+    minim = Minim(this)
+    coin_sound = minim.loadSample("coin_sound.mp3")
 
     
 def draw():
-    global mode, bird, birdx, birdy, score, start_game 
+    global mode, bird, birdx, birdy, score, start_game, highscore, circleY1, circleY2, pipe1, pipe2, pipe3, circleX1, circleX2, circleY1, circleY2, choiceA1, choiceA2, choiceB1, choiceB2
     global Xcoor_play, Ycoor_play, canvasX, canvasY, play_screen_background, Playscreen_Height, Playscreen_Width, Play_Width_Size, Increment, image_PlayX, image_PlayY
     if mode == 1:
         start_screen()
         
     elif mode == 2:
         moving_play_screen()
+        #body
+        fill(255)
+        stroke(255)
+        ellipse(155, circleY1, 45, 52)
+        #beak
+        ellipse(173, circleY2, 16, 23)
         bird = loadImage("character_bird.png")
         image(bird,birdx,birdy,110,80)
         if start_game == True:
             birdy += 1.5
+            circleY1 += 1.5
+            circleY2 += 1.5
             pipes_draw()
             pipes_move()
             check_lengths()
             reset_pipes()
+            check_collisions_top(pipe1, choiceA2, choiceB2, circleX1, circleY1)
+            check_collisions_top(pipe2, choiceA2, choiceB2, circleX1, circleY1)
+            check_collisions_top(pipe3, choiceA2, choiceB2, circleX1, circleY1)
+            check_collisions_top(pipe1, choiceA1, choiceB1, circleX2, circleY2)
+            check_collisions_top(pipe2, choiceA1, choiceB1, circleX2, circleY2)
+            check_collisions_top(pipe3, choiceA1, choiceB1, circleX2, circleY2)
+            
+            check_collisions_bottom(pipe1, choiceA1, choiceB1, circleX2, circleY2)
+            check_collisions_bottom(pipe2, choiceA1, choiceB1, circleX2, circleY2)
+            check_collisions_bottom(pipe3, choiceA1, choiceB1, circleX2, circleY2)
+            check_collisions_bottom(pipe1, choiceA2, choiceB2, circleX1, circleY1)
+            check_collisions_bottom(pipe2, choiceA2, choiceB2, circleX1, circleY1)
+            check_collisions_bottom(pipe3, choiceA2, choiceB2, circleX1, circleY1)
+            
+            points(pipe1)
+            points(pipe2)
+            points(pipe3)
+        
         elif start_game == False:
             animation_playscreen()
             pipes_draw()
+            fill(255)
+            circleX1 = 153
+            circleX2 = 173
+            circleY1 = 445
+            circleY2 = 455
+            stroke(255)
+            ellipse(155, circleY1, 45, 52)
+            #beak
+            ellipse(173, circleY2, 16, 23)
+            birdx = 100
+            birdy = 400
+            bird = loadImage("character_bird.png")
+            image(bird,birdx,birdy,110,80)
+            pipe1 = [[300, 0, topleftx1, toplefty1, 280, 100],[ 300, 483, bottomleftx1, bottomlefty1, 280, 100]]
+            pipe2 = [[550, 0, topleftx2, toplefty2, 375, 100], [550, 563, bottomleftx2, bottomlefty2, 200, 100]]
+            pipe3 = [[800, 0, topleftx3, toplefty3, 120, 100], [800, 363, bottomleftx3, bottomlefty3, 400, 100]]
             
     elif mode == 3:
         end_screen()
-        score = 0
+        if score >= highscore:
+                highscore = score
+        #print score 
+        score_text= createFont("Cursive", 100)
+        fill(255, 105, 180)
+        strokeWeight(16)
+        textFont(score_text)
+        text((score), 190, 400)
+        text((highscore), 490, 400) 
+    
         start_game = False
-
              
 def mousePressed():
-    global mode
+    global mode, score
     if (mouseX >= 100 and mouseX <= 640) and (mouseY >= 640 and mouseY <= 852) and (mode == 1):
         mode = 2
+        score = 0
     elif (mouseX >= 105 and mouseX <= 555) and (mouseY >= 415 and mouseY <= 577) and (mode == 3):
         mode = 2
+        score = 0
     elif (mouseX >= 105 and mouseX <= 555) and (mouseY >= 635 and mouseY <= 795) and (mode == 3):
         mode = 1
-
+        score = 0
+    
+    
+        
+        
+        
 def play_screen():
-    global mode, bird, birdy, start_game
+    global mode, bird, birdy, start_game, circleY1, circleY2
     if key == CODED:
         start_game = True
         
     if start_game == True:
         if keyCode == UP:
             birdy -= 80
+            circleY1 -= 80
+            circleY2 -= 80
+            
 
 
 def keyPressed():
@@ -227,8 +303,112 @@ def check_lengths():
         pipe2[1][1] = 700
     #check pipe 3
     if (pipe3[1][1] - pipe3[0][1]) <= 95:
-        pipe3[1][4] = 500
+        pipe3[1][4] = 500   
         
+        
+        
+def check_collisions_bottom(pipe, choiceA, choiceB, circleX, circleY):
+    global circleX2, circleX1, circleY2, circleY1, pipe1, pipe2, pipe3, start_game, mode
+    #small circle
+    for a in range(choiceA):
+        for b in range(choiceB):
+            #bottom pipes - top
+            #(+,+)
+            if (circleX + (a-1)//2) <= (pipe[1][0] + pipe[0][5]) and (circleX + (a-1)//2) >= pipe[1][0] and (circleY + (b-1)//2) >= pipe[1][1] and (circleY + (b - 1)//2) <= 763:
+                start_game = False
+                mode = 3
+            #(+, -)
+            elif (circleX + (a-1)//2) <= (pipe[1][0] + pipe[0][5]) and (circleX + (a-1)//2) >= pipe[1][0] and (circleY - (b-1)//2) >= pipe[1][1] and (circleY - (b - 1)//2) <= 763:
+                start_game = False
+                mode = 3
+            #(-,-)
+            elif (circleX - (a-1)//2) <= (pipe[1][0] + pipe[0][5]) and (circleX - (a-1)//2) >= pipe[1][0] and (circleY - (b-1)//2) >= pipe[1][1] and (circleY - (b - 1)//2) <= 763:
+                start_game = False
+                mode = 3
+            #(-, +)
+            elif (circleX - (a-1)//2) <= (pipe[1][0] + pipe[0][5]) and (circleX - (a-1)//2) >= pipe[1][0] and (circleY + (b-1)//2) >= pipe[1][1] and (circleY + (b - 1)//2) <= 763:
+                start_game = False
+                mode = 3
+            #bottom pipes - left vertical and right vertical 
+            #(+,+)
+            if ((circleX + (a-1)//2) >= pipe[1][0] and (circleX + (a-1)//2) <= (pipe[1][0] + pipe[1][5]) and circleY >= pipe[1][1] and (circleY + (b-1)//2) <= (pipe[1][1] + pipe[1][5])):
+                start_game = False
+                mode = 3
+            #(+,-)
+            elif ((circleX + (a-1)//2) >= pipe[1][0] and (circleX + (a-1)//2) <= (pipe[1][0] + pipe[1][5]) and circleY >= pipe[1][1] and (circleY - (b-1)//2) <= (pipe[1][1] + pipe[1][5])):
+                start_game = False
+                mode = 3
+            #(-,-)
+            elif ((circleX - (a-1)//2) >= pipe[1][0] and (circleX - (a-1)//2) <= (pipe[1][0] + pipe[1][5]) and circleY >= pipe[1][1] and (circleY - (b-1)//2) <= (pipe[1][1] + pipe[1][5])):
+                start_game = False
+                mode = 3
+            #(-,+)
+            elif ((circleX - (a-1)//2) >= pipe[1][0] and (circleX - (a-1)//2) <= (pipe[1][0] + pipe[1][5]) and circleY >= pipe[1][1] and (circleY + (b-1)//2) <= (pipe[1][1] + pipe[1][5])):
+                start_game = False
+                mode = 3
+            
+    #ground        
+            elif (circleY + (b-1)//2) >= 763:
+                start_game = False
+                mode = 3
 
+
+
+
+
+def check_collisions_top(pipe, choiceA, choiceB, circleX, circleY):
+    global circleX2, circleX1, circleY2, circleY1, pipe1, pipe2, pipe3, start_game, mode
+    #small circle
+    for a in range(choiceA):
+        for b in range(choiceB):
+            #top pipes - left vertical and right vertical 
+            #(+, +)
+            if ((circleX + (a-1)//2) >= pipe[0][0] and (circleX + (a-1)//2) <= (pipe[0][0] + pipe[0][5]) and (circleY + (b-1)//2) >= 0 and (circleY + (b-1)//2) <= pipe[0][4]):
+                start_game = False
+                mode = 3
+            #(+,-)
+            elif ((circleX + (a-1)//2) >= pipe[0][0] and (circleX + (a-1)//2) <= (pipe[0][0] + pipe[0][5]) and (circleY - (b-1)//2) >= 0 and (circleY - (b-1)//2) <= pipe[0][4]):
+                start_game = False
+                mode = 3
+            #(-,-)
+            elif ((circleX - (a-1)//2) >= pipe[0][0] and (circleX - (a-1)//2) <= (pipe[0][0] + pipe[0][5]) and (circleY - (b-1)//2) >= 0 and (circleY - (b-1)//2) <= pipe[0][4]):
+                start_game = False
+                mode = 3
+            #(-,+)
+            elif ((circleX - (a-1)//2) >= pipe[0][0] and (circleX - (a-1)//2) <= (pipe[0][0] + pipe[0][5]) and (circleY + (b-1)//2) >= 0 and (circleY + (b-1)//2) <= pipe[0][4]):
+                start_game = False
+                mode = 3
+            #top pipes - bottom 
+            #(+,-)
+            if (circleX + (a-1)//2) <= (pipe[0][0] + pipe[0][5]) and (circleX + (a-1)//2) >= pipe[0][0] and (circleY - (b-1)//2) >= 0 and (circleY - (b - 1)//2) <= pipe[0][4]:
+                start_game = False
+                mode = 3
+            #(+,+)
+            elif (circleX + (a-1)//2) <= (pipe[0][0] + pipe[0][5]) and (circleX + (a-1)//2) >= pipe[0][0] and (circleY + (b-1)//2) >= 0 and (circleY + (b - 1)//2) <= pipe[0][4]:
+                start_game = False
+                mode = 3
+            #(-,-)
+            elif (circleX - (a-1)//2) <= (pipe[0][0] + pipe[0][5]) and (circleX - (a-1)//2) >= pipe[0][0] and (circleY - (b-1)//2) >= 0 and (circleY - (b - 1)//2) <= pipe[0][4]:
+                start_game = False
+                mode = 3
+            #(-, +)
+            elif (circleX - (a-1)//2) <= (pipe[0][0] + pipe[0][5]) and (circleX - (a-1)//2) >= pipe[0][0] and (circleY + (b-1)//2) >= 0 and (circleY + (b - 1)//2) <= pipe[0][4]:
+                start_game = False
+                mode = 3
+
+
+
+def points(pipe):
+    global score, circleX1, circleX2, circleY1, circleY2, coin_sound, pipe1, pipe2, pipe3, score_timer
+    if (circleX1 - 44//2) == (pipe[0][0] + pipe[0][5]):
+            score += 1
+            coin_sound.trigger()
+    
+    
+
+
+
+                                                        
+                                                                       
     
     
