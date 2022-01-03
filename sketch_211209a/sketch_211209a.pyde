@@ -21,6 +21,7 @@ circleX1 = 155
 circleX2 = 173
 circleY1 = 445
 circleY2 = 455
+max_height = 0
 
 def setup():
     global mode
@@ -124,16 +125,18 @@ def mousePressed():
         
         
 def play_screen():
-    global mode, bird, birdy, start_game, circleY1, circleY2
+    global mode, bird, birdy, start_game, circleY1, circleY2, max_height
     if key == CODED:
         start_game = True
         
     if start_game == True:
         if keyCode == UP:
-            for i in range(80):
-                birdy -= 1
-                circleY1 -= 1
-                circleY2 -= 1
+            max_height = 0
+            while max_height <= 80:
+                birdy -= 0.5
+                circleY1 -= 0.5
+                circleY2 -= 0.5
+                max_height += 0.5
             
 
 
@@ -155,7 +158,7 @@ def play_screen_move_variables():
     Playscreen_Height = 900 
     Playscreen_Width = 1600  
     Play_Width_Size = 675 
-    Increment = 1  
+    Increment = 2  
     image_PlayX = 0    
     image_PlayY = 0      
     Xcoor_play = 0 
@@ -402,7 +405,7 @@ def check_collisions_top(pipe, choiceA, choiceB, circleX, circleY):
 
 def points(pipe):
     global score, circleX1, circleX2, circleY1, circleY2, coin_sound, pipe1, pipe2, pipe3, speed
-    if (circleX1 - 44//2) == (pipe[0][0] + pipe[0][5]): #if speed = 2 add +1
+    if (circleX1 - 44//2) == (pipe[0][0] + pipe[0][5]): 
             score += 1
             coin_sound.trigger()
     elif (circleX1 - 44//2) == (pipe[0][0] + pipe[0][5] + 1): #if speed = 2 add +1
